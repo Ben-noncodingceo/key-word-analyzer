@@ -1,10 +1,11 @@
 name = "social-media-parser"
-main = "worker/src/index.ts"
+main = "src/index.ts"
 compatibility_date = "2024-12-16"
+node_compat = true
 
 # Environment variables (set via wrangler secret put)
 # OPENAI_API_KEY
 # DEEPSEEK_API_KEY
 
 [env.production]
-name = "social-media-parser-prod"
+name = "social-media-parser"
