@@ -1,5 +1,5 @@
 import type { Env, AnalyzeRequest, AnalyzeResponse } from './types';
-import { identifyPlatform, getCacheKey, getCorsHeaders } from './utils';
+import { identifyPlatform, getCorsHeaders } from './utils';
 import { getParser } from './parsers';
 import { createAIProvider } from './ai';
 
@@ -40,19 +40,6 @@ export default {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            ...getCorsHeaders(),
-          },
-        });
-      }
-
-      // 检查缓存
-      const cacheKey = getCacheKey(url, provider, model || '');
-      const cached = await env.CACHE.get(cacheKey);
-      if (cached) {
-        return new Response(cached, {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Cache': 'HIT',
             ...getCorsHeaders(),
           },
         });
@@ -176,15 +163,9 @@ export default {
 
       const responseBody = JSON.stringify(response);
 
-      // 缓存结果（24小时）
-      await env.CACHE.put(cacheKey, responseBody, {
-        expirationTtl: 86400,
-      });
-
       return new Response(responseBody, {
         headers: {
           'Content-Type': 'application/json',
-          'X-Cache': 'MISS',
           ...getCorsHeaders(),
         },
       });
