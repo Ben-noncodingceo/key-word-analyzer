@@ -1,4 +1,3 @@
-import { load } from 'cheerio';
 import type { PlatformParser, ParsedArticle } from '../types';
 import { stripHtml, countWords, extractExcerpt } from '../utils';
 
@@ -8,11 +7,7 @@ export class XiaohongshuParser implements PlatformParser {
   }
 
   parse(html: string): ParsedArticle {
-    const $ = load(html);
     const notes: string[] = [];
-
-    // 小红书的页面结构经常变化，这里提供一个基础实现
-    // 实际使用时可能需要根据最新的页面结构调整
 
     let title = 'N/A';
     let author = 'N/A';
@@ -23,10 +18,11 @@ export class XiaohongshuParser implements PlatformParser {
     let replies: number | string = 'N/A';
     let collects: number | string = 'N/A';
 
-    // 尝试从JSON-LD中提取数据
-    $('script[type="application/ld+json"]').each((_, elem) => {
+    // 尝试从 JSON-LD 中提取数据
+    const jsonLdMatch = html.match(/<script[^>]*type="application\/ld\+json"[^>]*>(.*?)<\/script>/s);
+    if (jsonLdMatch) {
       try {
-        const jsonData = JSON.parse($(elem).html() || '{}');
+        const jsonData = JSON.parse(jsonLdMatch[1]);
         if (jsonData['@type'] === 'Article') {
           title = jsonData.headline || title;
           author = jsonData.author?.name || author;
@@ -34,58 +30,50 @@ export class XiaohongshuParser implements PlatformParser {
           text = jsonData.articleBody || text;
         }
       } catch (e) {
-        // JSON解析失败，跳过
+        // JSON 解析失败，继续使用其他方法
       }
-    });
+    }
 
-    // 尝试从页面元素中提取
+    // 如果 JSON-LD 没有数据，尝试从 meta 标签提取
     if (title === 'N/A') {
-      title = $('meta[property="og:title"]').attr('content') ||
-              $('.title').first().text().trim() ||
-              'N/A';
+      const titleMatch = html.match(/<meta[^>]*property="og:title"[^>]*content="([^"]*)"/) ||
+                         html.match(/<title[^>]*>(.*?)<\/title>/s);
+      if (titleMatch) {
+        title = stripHtml(titleMatch[1]).trim();
+      }
     }
 
     if (author === 'N/A') {
-      author = $('meta[name="author"]').attr('content') ||
-               $('.author-name').first().text().trim() ||
-               'N/A';
+      const authorMatch = html.match(/<meta[^>]*name="author"[^>]*content="([^"]*)"/);
+      if (authorMatch) {
+        author = authorMatch[1].trim();
+      }
     }
 
+    // 尝试提取正文内容
     if (!text) {
-      // 尝试提取正文内容
       const contentSelectors = [
-        '.note-content',
-        '.content',
-        '[class*="note-text"]',
-        '[class*="desc"]'
+        /class="[^"]*note-content[^"]*"[^>]*>(.*?)<\/div>/s,
+        /class="[^"]*content[^"]*"[^>]*>(.*?)<\/div>/s,
+        /class="[^"]*desc[^"]*"[^>]*>(.*?)<\/div>/s,
       ];
 
       for (const selector of contentSelectors) {
-        const content = $(selector).first().html();
-        if (content) {
-          text = stripHtml(content);
-          break;
+        const match = html.match(selector);
+        if (match) {
+          text = stripHtml(match[1]);
+          if (text.length > 50) break;
         }
       }
     }
 
-    // 尝试提取互动数据
-    // 小红书的互动数据可能在页面中，但格式经常变化
-    $('[class*="count"], [class*="number"]').each((_, elem) => {
-      const elemText = $(elem).text().trim();
-      const parent = $(elem).parent();
-      const parentText = parent.text().toLowerCase();
-
-      if (parentText.includes('赞') || parentText.includes('like')) {
-        likes = parseInt(elemText) || elemText;
-      } else if (parentText.includes('评论') || parentText.includes('comment')) {
-        replies = parseInt(elemText) || elemText;
-      } else if (parentText.includes('收藏') || parentText.includes('collect')) {
-        collects = parseInt(elemText) || elemText;
-      } else if (parentText.includes('浏览') || parentText.includes('view')) {
-        views = parseInt(elemText) || elemText;
+    // 如果还是没有内容，提取 body
+    if (!text || text.length < 50) {
+      const bodyMatch = html.match(/<body[^>]*>(.*?)<\/body>/s);
+      if (bodyMatch) {
+        text = stripHtml(bodyMatch[1]);
       }
-    });
+    }
 
     notes.push('小红书的数据结构可能因页面更新而变化');
     if (views === 'N/A') {
