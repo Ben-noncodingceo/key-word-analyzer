@@ -2,17 +2,9 @@ name = "social-media-parser"
 main = "worker/src/index.ts"
 compatibility_date = "2024-12-16"
 
-# KV namespace for caching
-kv_namespaces = [
-  { binding = "CACHE", id = "placeholder_id" }
-]
-
 # Environment variables (set via wrangler secret put)
 # OPENAI_API_KEY
 # DEEPSEEK_API_KEY
 
 [env.production]
 name = "social-media-parser-prod"
-kv_namespaces = [
-  { binding = "CACHE", id = "placeholder_id" }
-]

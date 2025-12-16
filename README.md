@@ -10,7 +10,6 @@
 - ✅ **内容摘要**：生成 150-300 字的精炼摘要
 - ✅ **互动数据**：展示文章的阅读量、点赞、评论等数据（如可获取）
 - ✅ **一键复制**：支持关键词、标签、摘要的快速复制
-- ✅ **智能缓存**：使用 Cloudflare KV 缓存分析结果，节省成本
 
 ## 技术栈
 
@@ -18,7 +17,6 @@
 - Cloudflare Workers (Serverless)
 - TypeScript
 - Cheerio (HTML 解析)
-- Cloudflare KV (缓存)
 
 ### 前端
 - React 18
@@ -92,16 +90,25 @@ npm run dev
 
 #### 部署 Worker
 
+**通过 Cloudflare Dashboard 部署 Worker:**
+
+1. 登录 https://dash.cloudflare.com/
+2. 点击 "Workers & Pages"
+3. 点击 "Create application" → "Create Worker"
+4. 给 Worker 命名（如：social-media-parser）
+5. 复制 `worker/src/index.ts` 及所有源代码文件
+6. 在 Worker 编辑器中粘贴代码
+7. 点击 "Save and Deploy"
+
+**设置环境变量：**
+- 在 Worker 设置页面，找到 "Variables and Secrets"
+- 添加两个 Secret:
+  - `OPENAI_API_KEY`: 你的 OpenAI API Key
+  - `DEEPSEEK_API_KEY`: 你的 DeepSeek API Key
+
+**或使用 wrangler 命令行部署：**
 ```bash
 cd worker
-
-# 首次部署前，需要在 wrangler.toml 中配置 KV namespace ID
-# 创建 KV namespace:
-npx wrangler kv:namespace create CACHE
-
-# 将返回的 ID 填入 wrangler.toml 的 kv_namespaces.id
-
-# 部署
 npm run deploy
 ```
 

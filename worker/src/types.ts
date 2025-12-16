@@ -68,7 +68,6 @@ export interface ParsedArticle {
 
 // Worker环境变量
 export interface Env {
-  CACHE: KVNamespace;
   OPENAI_API_KEY: string;
   DEEPSEEK_API_KEY: string;
 }
