@@ -105,22 +105,54 @@ npx wrangler kv:namespace create CACHE
 npm run deploy
 ```
 
-#### 部署前端到 Cloudflare Pages
+#### 部署前端到 Cloudflare Pages（自动部署 - 推荐）
 
-```bash
-cd frontend
-npm run build
+**方法：通过 GitHub 自动部署**
 
-# 将 dist 目录部署到 Cloudflare Pages
-# 方法1: 使用 wrangler pages
-npx wrangler pages deploy dist --project-name=social-media-parser
+1. **登录 Cloudflare Dashboard**
+   - 访问 https://dash.cloudflare.com/
+   - 选择你的账号
 
-# 方法2: 通过 Cloudflare Dashboard
-# 1. 登录 Cloudflare Dashboard
-# 2. 进入 Pages
-# 3. 创建项目并连接 Git 仓库
-# 4. 设置构建命令: npm run build
-# 5. 设置输出目录: dist
+2. **创建 Pages 项目**
+   - 点击左侧菜单 "Workers & Pages"
+   - 点击 "Create application"
+   - 选择 "Pages" 标签
+   - 点击 "Connect to Git"
+
+3. **连接 GitHub 仓库**
+   - 选择你的 GitHub 账号
+   - 找到并选择 `key-word-analyzer` 仓库
+   - 点击 "Begin setup"
+
+4. **配置构建设置（重要！）**
+   ```
+   Framework preset: React (Vite)
+   Build command: npm run build
+   Build output directory: frontend/dist
+   Root directory: (留空，使用根目录)
+   ```
+
+   **📸 设置截图对照：**
+   - Framework preset: `React (Vite)` ✅
+   - Build command: `npm run build` ✅
+   - Build output directory: `frontend/dist` ✅ （注意不是 `/dist` 也不是 `dist`）
+
+5. **环境变量（可选）**
+   - 点击 "Environment variables (advanced)"
+   - 添加 `VITE_API_URL` = `https://your-worker.workers.dev/api/analyze`
+   - （替换为你的 Worker 部署后的 URL）
+
+6. **保存并部署**
+   - 点击 "Save and Deploy"
+   - 等待首次构建完成（约 1-2 分钟）
+
+7. **后续自动部署**
+   - 每次你推送代码到 GitHub，Cloudflare Pages 会自动构建和部署
+   - 无需手动操作！✨
+
+**查看部署状态：**
+- Cloudflare Dashboard → Workers & Pages → 你的项目
+- 可以看到每次部署的历史记录和日志
 ```
 
 ## API 使用说明
