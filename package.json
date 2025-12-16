@@ -1,0 +1,26 @@
+{
+  "name": "key-word-analyzer",
+  "version": "1.0.0",
+  "description": "社媒文章一键解析器 - 支持小红书和微信公众号文章关键词提取",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "worker:dev": "npm run dev --prefix worker",
+    "worker:deploy": "npm run deploy --prefix worker",
+    "install:all": "npm install && cd frontend && npm install && cd ../worker && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ben-noncodingceo/key-word-analyzer"
+  },
+  "keywords": [
+    "社媒",
+    "文章解析",
+    "关键词提取",
+    "AI",
+    "Cloudflare"
+  ],
+  "author": "Ben",
+  "license": "MIT"
+}
