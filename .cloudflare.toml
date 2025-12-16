@@ -1,2 +1,7 @@
-# Cloudflare Pages 配置
-pages_build_output_dir = "frontend/dist"
+# Cloudflare Pages 部署配置
+# 注意：此配置已废弃，请使用 Cloudflare Dashboard 设置
+#
+# 正确的设置：
+# Build command: npm run build
+# Build output directory: frontend/dist
+# Framework preset: React (Vite)

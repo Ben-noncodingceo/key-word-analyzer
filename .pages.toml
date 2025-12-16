@@ -2,8 +2,8 @@
 # 这个文件会告诉 Cloudflare Pages 如何正确构建和部署前端
 
 [build]
-  command = "npm run build"
-  publish = "frontend/dist"
+command = "npm run build"
+cwd = ""
 
 [build.environment]
-  NODE_VERSION = "18"
+NODE_VERSION = "18"
