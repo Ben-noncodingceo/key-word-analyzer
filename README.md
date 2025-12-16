@@ -88,79 +88,20 @@ npm run dev
 
 ### 部署
 
-#### 部署 Worker
+**📖 完整部署指南请查看：[DEPLOYMENT.md](DEPLOYMENT.md)**
 
-**通过 Cloudflare Dashboard 部署 Worker:**
+#### 快速开始
 
-1. 登录 https://dash.cloudflare.com/
-2. 点击 "Workers & Pages"
-3. 点击 "Create application" → "Create Worker"
-4. 给 Worker 命名（如：social-media-parser）
-5. 复制 `worker/src/index.ts` 及所有源代码文件
-6. 在 Worker 编辑器中粘贴代码
-7. 点击 "Save and Deploy"
+**前端（自动部署）：**
+- 通过 Cloudflare Pages 连接 GitHub 仓库
+- 推送代码到 main 分支 → 自动部署
 
-**设置环境变量：**
-- 在 Worker 设置页面，找到 "Variables and Secrets"
-- 添加两个 Secret:
-  - `OPENAI_API_KEY`: 你的 OpenAI API Key
-  - `DEEPSEEK_API_KEY`: 你的 DeepSeek API Key
+**后端（自动部署）：**
+1. 配置 GitHub Secrets（一次性设置）
+2. 本地首次部署并设置 API Keys
+3. 之后推送代码 → 自动部署
 
-**或使用 wrangler 命令行部署：**
-```bash
-cd worker
-npm run deploy
-```
-
-#### 部署前端到 Cloudflare Pages（自动部署 - 推荐）
-
-**方法：通过 GitHub 自动部署**
-
-1. **登录 Cloudflare Dashboard**
-   - 访问 https://dash.cloudflare.com/
-   - 选择你的账号
-
-2. **创建 Pages 项目**
-   - 点击左侧菜单 "Workers & Pages"
-   - 点击 "Create application"
-   - 选择 "Pages" 标签
-   - 点击 "Connect to Git"
-
-3. **连接 GitHub 仓库**
-   - 选择你的 GitHub 账号
-   - 找到并选择 `key-word-analyzer` 仓库
-   - 点击 "Begin setup"
-
-4. **配置构建设置（重要！）**
-   ```
-   Framework preset: React (Vite)
-   Build command: npm run build
-   Build output directory: frontend/dist
-   Root directory: (留空，使用根目录)
-   ```
-
-   **📸 设置截图对照：**
-   - Framework preset: `React (Vite)` ✅
-   - Build command: `npm run build` ✅
-   - Build output directory: `frontend/dist` ✅ （注意不是 `/dist` 也不是 `dist`）
-
-5. **环境变量（可选）**
-   - 点击 "Environment variables (advanced)"
-   - 添加 `VITE_API_URL` = `https://your-worker.workers.dev/api/analyze`
-   - （替换为你的 Worker 部署后的 URL）
-
-6. **保存并部署**
-   - 点击 "Save and Deploy"
-   - 等待首次构建完成（约 1-2 分钟）
-
-7. **后续自动部署**
-   - 每次你推送代码到 GitHub，Cloudflare Pages 会自动构建和部署
-   - 无需手动操作！✨
-
-**查看部署状态：**
-- Cloudflare Dashboard → Workers & Pages → 你的项目
-- 可以看到每次部署的历史记录和日志
-```
+详细步骤请参考 [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ## API 使用说明
 
